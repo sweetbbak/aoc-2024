@@ -15,7 +15,7 @@ My rules:
 
 cd into any of the `dayXXX` directories and run `zig build run`
 
-### Day one
+### Day 1
 
 This one was easy (as the first days usually seem to be) I just opened my input, split the input by the sequence of three spaces.
 I then parsed the integers into a zig `usize` and appended each integer from each line into a seperate `ArrayList` from the stdlib.
@@ -57,3 +57,32 @@ but it was as simple as doing:
 ```
 
 where `left.items` and `right.items` are lists (or arrays, slices, etc...) of the same type.
+
+### Day 2
+
+I got this one pretty much right away, but I made a silly mistake that left me debugging for longer than I wanted to. I ended up peeking at someone else's
+[work](https://github.com/makyinmars/aoc-24/blob/main/src/2.zig) for Part 2 as a sanity check. I had the idea correct, but used an "or" when I needed to use an "and" lol... but anyways
+this one was simple. I just iterated over each line and then checked if they were already sorted or not in both ascending and descending order, if they were,
+I got the difference of each number with the next number in the list. Then I checked that the difference was between 1-3.
+
+For part 2, I did the exact same thing, but iterated over the array list and removed an item from the list and then checked it against the same function as above.
+
+the MVP this round is the `std.sort` library and the `std.ArrayList`
+
+```zig
+    for (list, 0..) |_, i| {
+        var newlist = std.ArrayList(u8).init(allocator);
+        defer newlist.deinit();
+
+        for (list, 0..) |val, x| {
+            if (x == i) continue;
+            try newlist.append(val);
+        }
+
+        const _list = try newlist.toOwnedSlice();
+        defer allocator.free(_list);
+
+        const good = try parse_numbers(_list);
+        if (good) return true;
+    }
+```
